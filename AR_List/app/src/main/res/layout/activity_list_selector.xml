@@ -7,27 +7,33 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.umkc.cj.ar_list.Main">
+    tools:context="com.umkc.cj.ar_list.ListSelector">
 
-    <Button
+    <Spinner
         android:layout_width="300dp"
-        android:layout_height="75dp"
-        android:textSize="20sp"
-        android:background="@drawable/arlist_button_selector"
-        android:text="List View"
-        android:id="@+id/normalView_button"
+        android:layout_height="30dp"
+        android:id="@+id/list_spinner"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp" />
+        android:layout_marginTop="75dp" />
 
     <Button
         android:layout_width="300dp"
         android:layout_height="75dp"
         android:textSize="20sp"
         android:background="@drawable/arlist_button_selector"
-        android:text="AR View"
-        android:id="@+id/ARView_button"
+        android:text="Open"
+        android:id="@+id/openList"
+        android:layout_below="@+id/list_spinner"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="300dp"
+        android:layout_height="75dp"
+        android:textSize="20sp"
+        android:background="@drawable/arlist_button_selector"
+        android:text="New List"
+        android:id="@+id/newList"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:enabled="false" />
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
