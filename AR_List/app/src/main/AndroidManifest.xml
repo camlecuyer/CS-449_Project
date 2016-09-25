@@ -16,7 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListSelector" />
-        <activity android:name=".ListViewer"></activity>
+        <activity android:name=".ListViewer" />
     </application>
 
 </manifest>

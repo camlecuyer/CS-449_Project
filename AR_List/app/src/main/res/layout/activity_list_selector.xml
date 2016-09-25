@@ -11,11 +11,11 @@
 
     <Spinner
         android:layout_width="300dp"
-        android:layout_height="30dp"
+        android:layout_height="50dp"
         android:id="@+id/list_spinner"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="75dp" />
+        android:layout_marginTop="60dp" />
 
     <Button
         android:layout_width="300dp"
