@@ -8,4 +8,5 @@
     <color name="arButton_dark">#006BB3</color>
     <color name="arButton_bright">#1AA3FF</color>
     <color name="arButton_button">#008AE6</color>
+    <color name="colorPrimaryLight">#DDDDDD</color>
 </resources>

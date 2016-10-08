@@ -4,22 +4,25 @@ package com.umkc.cj.ar_list;
  * Created by CJ on 9/25/2016.
  */
 
-public class ListData
+public class ListItemData
 {
     private String name;
     private int number;
+    private int quantity;
 
     // Constructors
-    ListData()
+    ListItemData()
     {
         name = "";
         number = 0;
+        quantity = 0;
     } // end default constructor
 
-    ListData(String tempName, int num)
+    ListItemData(String tempName, int num, int quan)
     {
         name = tempName;
         number = num;
+        quantity = quan;
     } // end parameter constructor
 
     // Accessors
@@ -33,8 +36,13 @@ public class ListData
         return number;
     } // end getNumber
 
+    int getQuantity()
+    {
+        return quantity;
+    } // end getQuantity
+
     public String toString()
     {
         return(getName());
     } // end toString
-} // end class ListData
+} // end class ListItemData

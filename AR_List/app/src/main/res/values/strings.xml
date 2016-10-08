@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">AR_List</string>
     <string name="database_name">ARData</string>
+    <string name="new_list">New List</string>
+    <string name="open_list">Open</string>
+    <string name="listname">List Name</string>
+    <string name="add_item">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="itemname">Item Name</string>
+    <string name="itemquantity">Quantity</string>
+    <string name="nameLabel">Name</string>
+    <string name="quantityLabel">Number</string>
 </resources>

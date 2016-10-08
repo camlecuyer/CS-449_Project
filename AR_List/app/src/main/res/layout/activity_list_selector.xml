@@ -22,7 +22,7 @@
         android:layout_height="75dp"
         android:textSize="20sp"
         android:background="@drawable/arlist_button_selector"
-        android:text="Open"
+        android:text="@string/open_list"
         android:id="@+id/openList"
         android:layout_below="@+id/list_spinner"
         android:layout_centerHorizontal="true" />
@@ -32,7 +32,7 @@
         android:layout_height="75dp"
         android:textSize="20sp"
         android:background="@drawable/arlist_button_selector"
-        android:text="New List"
+        android:text="@string/new_list"
         android:id="@+id/newList"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />

@@ -87,9 +87,34 @@ public class Data extends SQLiteOpenHelper
         {
             db.endTransaction();
         } // end try/catch
+    } // end addList
+
+    public void addListItem(String name, int quantity, int foreignKey)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+        try
+        {
+            ContentValues values = new ContentValues();
+            values.put(KEY_LIST_ITEM_NAME, name);
+            values.put(KEY_LIST_ITEM_QUANTITY, quantity);
+            values.put(KEY_LIST_ITEM_FK, foreignKey);
+
+            db.insertOrThrow(DATA_TABLE_ITEMS, null, values);
+            db.setTransactionSuccessful();
+        }
+        catch (Exception e)
+        {
+            Log.d("addItem", "Error trying to add list item to database");
+        }
+        finally
+        {
+            db.endTransaction();
+        } // end try/catch
     } // end addListItem
 
-    // Get all posts in the database
+    // Get all lists in the database
     public List<ListData> getLists()
     {
         // Select all
@@ -126,4 +151,44 @@ public class Data extends SQLiteOpenHelper
         } // end try/catch
         return data;
     } // end getLists
+
+    // Get all list items with same listID in the database
+    public ArrayList<ListItemData> getListItems(int listID)
+    {
+        // Select all
+        String LISTS_SELECT_QUERY = "SELECT * FROM " + DATA_TABLE_ITEMS + " WHERE "
+                + KEY_LIST_ITEM_FK + " = " + listID;
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(LISTS_SELECT_QUERY, null);
+        ArrayList<ListItemData> data = new ArrayList<ListItemData>();
+
+        try
+        {
+            if (cursor.moveToFirst())
+            {
+                do
+                {
+                    ListItemData dataCall =
+                            new ListItemData(cursor.getString(cursor.getColumnIndex(KEY_LIST_ITEM_NAME)),
+                                    cursor.getInt(cursor.getColumnIndex(KEY_LIST_ITEM_ID)),
+                                    cursor.getInt(cursor.getColumnIndex(KEY_LIST_ITEM_QUANTITY)));
+                    data.add(dataCall);
+                } while(cursor.moveToNext()); // end loop
+            } // end if
+        }
+        catch (Exception e)
+        {
+            Log.d("getItem", "Error while trying to get list items from database");
+        }
+        finally
+        {
+            if (cursor != null && !cursor.isClosed())
+            {
+                cursor.close();
+            } // end if
+            db.close();
+        } // end try/catch
+        return data;
+    } // end getListItems
 } // end Data
