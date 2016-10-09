@@ -5,21 +5,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+// Class attached to initial activity
+
 public class Main extends AppCompatActivity implements View.OnClickListener
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // initializes database
         Data sql = new Data(this);
 
-        // Sets listeners for main buttons
+        // sets listener for standard view button
         View normalView = findViewById(R.id.normalView_button);
         normalView.setOnClickListener(this);
 
+        // sets listener for AR view button
         View ARView = findViewById(R.id.ARView_button);
         ARView.setOnClickListener(this);
     } // end onCreate
@@ -32,8 +35,10 @@ public class Main extends AppCompatActivity implements View.OnClickListener
         {
             case R.id.normalView_button:
             {
-                // launches the List Selector activity
+                // create new intent
                 Intent intent = new Intent(this, ListSelector.class);
+
+                // launches the List Selector activity
                 startActivity(intent);
                 break;
             } // end case normalView_button
