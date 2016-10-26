@@ -6,10 +6,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Spinner;
+
 import java.util.List;
 
 // Class attached to list selector activity
@@ -134,4 +137,59 @@ public class ListSelector extends AppCompatActivity implements View.OnClickListe
             } // end case newList
         } // end switch
     } // end OnClick
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.list_menu, menu);
+        return true;
+    } // end onCreateOptionsMenu
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // switches based on item clicked
+        switch (item.getItemId())
+        {
+            case R.id.delete_list:
+            {
+                // gets selected item
+                final ListData list = dataAdapter.getItem(spinner.getSelectedItemPosition());
+
+                // creates new builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Are you sure you want to delete list: " + list.getName());
+                builder.setCancelable(false);
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    int num = list.getNumber();
+
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        sql.deleteList(num);
+                    } // end OnClick
+                }); // builder setPositiveButton
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        // close dialog
+                        dialog.cancel();
+                    } // end OnClick
+                }); // builder setNegativeButton
+
+                // show builder
+                builder.show();
+
+                // refresh spinner
+                loadSpinner();
+                return true;
+            }
+            default:
+            {
+                return super.onOptionsItemSelected(item);
+            }
+        } // end switch
+    } // end onOptionsItemSelected
 } // end ListSelector

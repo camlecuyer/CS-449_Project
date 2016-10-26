@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.umkc.cj.ar_list.ListData;
+import com.umkc.cj.ar_list.ListItemData;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -251,5 +255,42 @@ public class Data extends SQLiteOpenHelper
 
         // return list of data
         return data;
+    } // end getListItems
+
+    // Delete all list items associated with a list
+    // then deletes the list
+    public void deleteList(int listID)
+    {
+        // Delete all items with same listID
+        String LIST_ITEMS_DELETE_QUERY = "DELETE FROM " + DATA_TABLE_ITEMS + " WHERE "
+                + KEY_LIST_ITEM_FK + " = " + listID;
+
+        // Delete list with listID
+        String LISTS_DELETE_QUERY = "DELETE FROM " + DATA_TABLE_LIST + " WHERE "
+                + KEY_LIST_ID + " = " + listID;
+
+        // gets the database
+        SQLiteDatabase db = getWritableDatabase();
+
+        // starts connection to the database
+        db.beginTransaction();
+
+        // attempt to get data
+        try
+        {
+            db.execSQL(LIST_ITEMS_DELETE_QUERY);
+            db.execSQL(LISTS_DELETE_QUERY);
+
+            db.setTransactionSuccessful();
+        }
+        catch (Exception e)
+        {
+            Log.d("deleteList", "Error while trying to delete list from database");
+        }
+        finally
+        {
+            // close connection
+            db.endTransaction();
+        } // end try/catch
     } // end getListItems
 } // end Data

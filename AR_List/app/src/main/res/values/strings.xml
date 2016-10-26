@@ -10,4 +10,5 @@
     <string name="itemquantity">Quantity</string>
     <string name="nameLabel">Name</string>
     <string name="quantityLabel">Number</string>
+    <string name="delete">Delete</string>
 </resources>
