@@ -10,8 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -25,6 +28,14 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
     private int listID;
     // holds the list of items
     ArrayList<ListItemData> items;
+    // holds the value of the selected item
+    ListItemData selectedItem;
+    // holds the size of the listView
+    int listSize;
+    //holds the position of selected item
+    int curPosition = -1;
+    // holds the img of the selected item
+    ImageView img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,7 +71,81 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
 
         // place the data into the list
         lv.setAdapter(new ItemListAdapter(this, items));
+
+        // selects an item in the list
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                // changes image to unselected
+                if(curPosition != position && curPosition != -1)
+                {
+                    img.setImageResource(R.mipmap.item_unselected);
+                } // end if
+
+                // sets the curPosition of selectedItem
+                curPosition = position;
+
+                // saves the selectedItem info
+                selectedItem = (ListItemData) parent.getItemAtPosition(position);
+
+                // gets the ImageView associated with selectedItem
+                img = (ImageView)view.findViewById(R.id.item_select);
+
+                // changes the image to selected
+                img.setImageResource(R.mipmap.item_selected);
+            }
+        });
+
+        // get number of items in the list
+        listSize = lv.getCount();
+
+        // reset position
+        curPosition = -1;
     } // end loadList
+
+    // calls database to add list
+    private void addItem(String name, int num)
+    {
+        // add data to database
+        try
+        {
+            sql.addItemValid(name, num, listID);
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, "Add item failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+        } // end try/catch
+    } // end addItem
+
+    // calls database to add list
+    private void deleteItem(int id)
+    {
+        // add data to database
+        try
+        {
+            sql.deleteItemValid(id);
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, "Delete item failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+        } // end try/catch
+    } // end deleteItem
+
+    // calls database to add list
+    private void updateItem(String name, int id, int num)
+    {
+        // add data to database
+        try
+        {
+            sql.updateItemValid(id, name, num);
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, "Update item failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+        } // end try/catch
+    } // end updateItem
 
     @Override
     public void onClick(View v)
@@ -107,10 +192,21 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
                                 // dismiss dialog
                                 dialog.dismiss();
 
-                                // add data to database
-                                sql.addListItem(inputName.getText().toString(),
-                                        Integer.parseInt(inputQuantity.getText().toString()),
-                                        listID);
+                                // holder for input num
+                                int num;
+
+                                // tests to see if good input
+                                if(inputQuantity.getText().toString().trim().length() == 0)
+                                {
+                                    num = 0;
+                                }
+                                else
+                                {
+                                    num = Integer.parseInt(inputQuantity.getText().toString().trim());
+                                } // end if
+
+                                // calls add
+                                addItem(inputName.getText().toString().trim(), num);
 
                                 // refresh list
                                 loadList();
@@ -130,6 +226,104 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
                 builder.show();
                 return true;
             }
+            case R.id.delete:
+            {
+                if(listSize > 0 && curPosition != -1)
+                {
+                    if(selectedItem != null)
+                    {
+                        // creates new builder
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Are you sure you want to delete item: " + selectedItem.getName());
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            int num = selectedItem.getNumber();
+
+                            public void onClick(DialogInterface dialog, int id) {
+                                deleteItem(num);
+
+                                // refresh list
+                                loadList();
+                            } // end OnClick
+                        }); // builder setPositiveButton
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                                // close dialog
+                                dialog.cancel();
+                            } // end OnClick
+                        }); // builder setNegativeButton
+
+                        // show builder
+                        builder.show();
+                        return true;
+                    } // end if
+                } // end if
+            }
+            case R.id.update:
+            {
+                if(listSize > 0 && curPosition != -1)
+                {
+                    // creates new builder
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                    // inflates the view for adding item
+                    View viewInflated = LayoutInflater.from(this).inflate(R.layout.add_list_item_layout,
+                            (ViewGroup) findViewById(android.R.id.content), false);
+
+                    // retrieve data from adding item
+                    final EditText inputName = (EditText) viewInflated.findViewById(R.id.itemname);
+                    inputName.setText(selectedItem.getName());
+                    final EditText inputQuantity = (EditText) viewInflated.findViewById(R.id.itemquantity);
+                    inputQuantity.setText(selectedItem.getQuantity() + "");
+
+                    // inflate and set the layout for the dialog
+                    builder.setView(viewInflated)
+                            // Add action buttons
+                            .setPositiveButton(R.string.update, new DialogInterface.OnClickListener()
+                            {
+                                // on click add data
+                                @Override
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    // dismiss dialog
+                                    dialog.dismiss();
+
+                                    // holder for input num
+                                    int num;
+                                    int itemId = selectedItem.getNumber();
+
+                                    // tests to see if good input
+                                    if(inputQuantity.getText().toString().trim().length() == 0)
+                                    {
+                                        num = 0;
+                                    }
+                                    else
+                                    {
+                                        num = Integer.parseInt(inputQuantity.getText().toString().trim());
+                                    } // end if
+
+                                    // calls add
+                                    updateItem(inputName.getText().toString().trim(), itemId, num);
+
+                                    // refresh list
+                                    loadList();
+                                } // end onClick
+                            })
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+                            {
+                                // on click cancel action
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    // close dialog
+                                    dialog.cancel();
+                                } // end onClick
+                            }); // end setView
+
+                    // show builder
+                    builder.show();
+                    return true;
+                } // end if
+            }
             default:
             {
                 // returns a default action
@@ -137,11 +331,4 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
             }
         } // end switch
     } // end onOptionsItemSelected
-
-    /*@Override
-    protected void onListItemClick(ListView l, View v, int position, long id)
-    {
-        ListItemData item = (ListItemData) getListAdapter().getItem(position);
-
-    } // end onListItemClick*/
 } // end ListViewer

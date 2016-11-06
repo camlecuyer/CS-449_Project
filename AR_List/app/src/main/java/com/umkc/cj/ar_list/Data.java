@@ -7,8 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.umkc.cj.ar_list.ListData;
-import com.umkc.cj.ar_list.ListItemData;
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,74 +76,124 @@ public class Data extends SQLiteOpenHelper
         } // end if
     } // end onUpgrade
 
+    // validates data and calls addList
+    // throws: Exception
+    public void addListValid(String name) throws Exception
+    {
+        if(name.length() == 0)
+        {
+            Exception e = new Exception("List name cannot be empty");
+            throw e;
+        }
+        else
+        {
+            addList(name);
+        } // end if
+    } // end addListValid
+
+    // validates data and calls addListItem
+    // throws: Exception
+    public void addItemValid(String name, int quantity, int foreignKey) throws Exception
+    {
+        if(name.length() == 0)
+        {
+            Exception e = new Exception("Item name cannot be empty");
+            throw e;
+        }
+        else
+        {
+            addListItem(name, quantity, foreignKey);
+        } // end if
+    } // end addItemValid
+
+    // calls deleteList
+    public void deleteListValid(int listID)
+    {
+        deleteList(listID);
+    } // end deleteListValid
+
+    // calls deleteItem
+    public void deleteItemValid(int itemID)
+    {
+        deleteItem(itemID);
+    } // end deleteItemValid
+
+    // validates data and calls updateItem
+    // throws: Exception
+    public void updateItemValid(int itemID, String name, int quan) throws Exception
+    {
+        if(name.length() == 0)
+        {
+            Exception e = new Exception("Item name cannot be empty");
+            throw e;
+        }
+        else
+        {
+            updateItem(itemID, name, quan);
+        } // end if
+    } // end updateItemValid
+
+    // validates data and calls updateList
+    // throws: Exception
+    public void updateListValid(int listID, String name) throws Exception
+    {
+        if(name.length() == 0)
+        {
+            Exception e = new Exception("Item name cannot be empty");
+            throw e;
+        }
+        else
+        {
+            updateList(listID, name);
+        } // end if
+    } // end updateListValid
+
     // Add an item to the list table
     // pass in the name of the list as a string
-    public void addList(String name)
+    private void addList(String name)
     {
+        if (AssertSettings.PRIORITY1_ASSERTIONS)
+        {
+            // Assert if name is null
+            Assert.assertNotNull("name is null", name);
+        } // end if
+
         // gets the database
         SQLiteDatabase db = getWritableDatabase();
 
-        // starts connection to the database
-        db.beginTransaction();
+        // get values
+        ContentValues values = new ContentValues();
 
-        // tries to insert to database, throws error if insert failed
-        try
-        {
-            // get values
-            ContentValues values = new ContentValues();
+        // put the values into the corresponding location
+        values.put(KEY_LIST_NAME, name);
 
-            // put the values into the corresponding location
-            values.put(KEY_LIST_NAME, name);
-
-            // attempt to insert
-            db.insertOrThrow(DATA_TABLE_LIST, null, values);
-            db.setTransactionSuccessful();
-        }
-        catch (Exception e)
-        {
-            Log.d("add", "Error trying to add list to database");
-        }
-        finally
-        {
-            // close connection
-            db.endTransaction();
-        } // end try/catch
+        // attempt to insert
+        db.insertOrThrow(DATA_TABLE_LIST, null, values);
     } // end addList
 
     // Add an item to the list table
     // pass in the name of the list as a string
-    public void addListItem(String name, int quantity, int foreignKey)
+    private void addListItem(String name, int quantity, int foreignKey)
     {
+        if (AssertSettings.PRIORITY1_ASSERTIONS)
+        {
+            // Assert if name is null
+            Assert.assertNotNull("name is null", name);
+        } // end if
+
         // gets the database
         SQLiteDatabase db = getWritableDatabase();
 
-        // starts connection to the database
-        db.beginTransaction();
+        // get values
+        ContentValues values = new ContentValues();
 
-        // tries to insert to database, throws error if insert failed
-        try
-        {
-            // get values
-            ContentValues values = new ContentValues();
+        // put the values into the corresponding location
+        values.put(KEY_LIST_ITEM_NAME, name);
+        values.put(KEY_LIST_ITEM_QUANTITY, quantity);
+        values.put(KEY_LIST_ITEM_FK, foreignKey);
 
-            // put the values into the corresponding location
-            values.put(KEY_LIST_ITEM_NAME, name);
-            values.put(KEY_LIST_ITEM_QUANTITY, quantity);
-            values.put(KEY_LIST_ITEM_FK, foreignKey);
-
-            // attempt to insert
-            db.insertOrThrow(DATA_TABLE_ITEMS, null, values);
-            db.setTransactionSuccessful();
-        }
-        catch (Exception e)
-        {
-            Log.d("addItem", "Error trying to add list item to database");
-        }
-        finally
-        {
-            // close connection
-            db.endTransaction();
-        } // end try/catch
+        // attempt to insert
+        db.insertOrThrow(DATA_TABLE_ITEMS, null, values);
     } // end addListItem
 
     // Get all lists in the database
@@ -259,7 +308,7 @@ public class Data extends SQLiteOpenHelper
 
     // Delete all list items associated with a list
     // then deletes the list
-    public void deleteList(int listID)
+    private void deleteList(int listID)
     {
         // Delete all items with same listID
         String LIST_ITEMS_DELETE_QUERY = "DELETE FROM " + DATA_TABLE_ITEMS + " WHERE "
@@ -292,5 +341,96 @@ public class Data extends SQLiteOpenHelper
             // close connection
             db.endTransaction();
         } // end try/catch
-    } // end getListItems
+    } // end deleteList
+
+    // Delete list item associated with itemID
+    private void deleteItem(int itemID)
+    {
+        // Delete all items with same itemID
+        String LIST_ITEMS_DELETE_QUERY = "DELETE FROM " + DATA_TABLE_ITEMS + " WHERE "
+                + KEY_LIST_ITEM_ID + " = " + itemID;
+
+        // gets the database
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.execSQL(LIST_ITEMS_DELETE_QUERY);
+    } // end deleteItem
+
+    // Update list associated with listID
+    private void updateList(int listID, String name)
+    {
+        if (AssertSettings.PRIORITY1_ASSERTIONS)
+        {
+            // Assert if name is null
+            Assert.assertNotNull("name is null in update", name);
+        } // end if
+
+        // Update list with listID
+        String LISTS_UPDATE_QUERY = "UPDATE " + DATA_TABLE_LIST + " SET " +
+                KEY_LIST_NAME + "='" + name +
+                "' WHERE " + KEY_LIST_ID + " = " + listID;
+
+        // gets the database
+        SQLiteDatabase db = getWritableDatabase();
+
+        // starts connection to the database
+        db.beginTransaction();
+
+        // attempt to get data
+        try
+        {
+            db.execSQL(LISTS_UPDATE_QUERY);
+
+            db.setTransactionSuccessful();
+        }
+        catch (Exception e)
+        {
+            Log.d("updateList", "Error while trying to update list");
+        }
+        finally
+        {
+            // close connection
+            db.endTransaction();
+        } // end try/catch
+    } // end updateList
+
+    // Update list item associated with itemID
+    // name is new name
+    // quan is new quantity
+    private void updateItem(int itemID, String name, int quan)
+    {
+        if (AssertSettings.PRIORITY1_ASSERTIONS)
+        {
+            // Assert if name is null
+            Assert.assertNotNull("name is null in update", name);
+        } // end if
+
+        // Update item with same itemID
+        String LIST_ITEMS_UPDATE_QUERY = "UPDATE " + DATA_TABLE_ITEMS + " SET " +
+                KEY_LIST_ITEM_NAME + "='" + name + "', " + KEY_LIST_ITEM_QUANTITY + "=" + quan +
+                " WHERE " + KEY_LIST_ITEM_ID + " = " + itemID;
+
+        // gets the database
+        SQLiteDatabase db = getWritableDatabase();
+
+        // starts connection to the database
+        db.beginTransaction();
+
+        // attempt to get data
+        try
+        {
+            db.execSQL(LIST_ITEMS_UPDATE_QUERY);
+
+            db.setTransactionSuccessful();
+        }
+        catch (Exception e)
+        {
+            Log.d("updateItem", "Error while trying to update item");
+        }
+        finally
+        {
+            // close connection
+            db.endTransaction();
+        } // end try/catch
+    } // end updateItem
 } // end Data
