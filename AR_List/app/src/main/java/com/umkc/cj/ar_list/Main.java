@@ -44,7 +44,11 @@ public class Main extends AppCompatActivity implements View.OnClickListener
             } // end case normalView_button
             case R.id.ARView_button:
             {
+                // create new intent
+                Intent intent = new Intent(this, AR_List.class);
 
+                // launches the List Selector activity
+                startActivity(intent);
                 break;
             } // end case ARView_button
         } // end switch

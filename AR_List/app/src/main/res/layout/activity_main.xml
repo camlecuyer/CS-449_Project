@@ -29,5 +29,5 @@
         android:id="@+id/ARView_button"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:enabled="false" />
+        android:enabled="true" />
 </RelativeLayout>
