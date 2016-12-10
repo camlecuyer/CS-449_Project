@@ -37,7 +37,7 @@ public class ListSelector extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_list_selector);
 
         // get the database
-        sql = new Data(this);
+        sql = Data.getInstance(this);
 
         // finds the spinner
         spinner = (Spinner) findViewById(R.id.list_spinner);
@@ -146,45 +146,51 @@ public class ListSelector extends AppCompatActivity implements View.OnClickListe
         } // end switch
     } // end OnClick
 
+    // displays error message
+    private void makeToast(String message)
+    {
+        Toast.makeText(this, message,Toast.LENGTH_LONG).show();
+    } // end makeToast
+
     // calls database to add list
     private void addList(String name)
     {
         // add data to database
         try
         {
-            sql.addListValid(name);
+            sql.addListWithValidation(name);
         }
         catch (Exception e)
         {
-            Toast.makeText(this, "Add list failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+            makeToast("Add list failed: " + e.toString());
         } // end try/catch
     } // end addList
 
-    // calls database to add list
+    // calls database to delete list
     private void deleteList(int id)
     {
-        // add data to database
+        // delete data in database
         try
         {
-            sql.deleteListValid(id);
+            sql.deleteListWithValidation(id);
         }
         catch (Exception e)
         {
-            Toast.makeText(this, "Delete list failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+            makeToast("Delete list failed: " + e.toString());
         } // end try/catch
     } // end deleteList
 
-    // calls database to add list
+    // calls database to update list
     private void updateList(String name, int id)
     {
-        // add data to database
+        // update data in database
         try
         {
-            sql.updateListValid(id, name);
+            sql.updateListWithValidation(id, name);
         }
         catch (Exception e)
         {
-            Toast.makeText(this, "Update list failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+            makeToast("Update list failed: " + e.toString());
         } // end try/catch
     } // end updateList
 
@@ -204,13 +210,14 @@ public class ListSelector extends AppCompatActivity implements View.OnClickListe
             // gets selected item
             final ListData list = dataAdapter.getItem(spinner.getSelectedItemPosition());
 
+            // creates new builder
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
             // switches based on item clicked
             switch (item.getItemId())
             {
                 case R.id.delete_list:
                 {
-                    // creates new builder
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setMessage("Are you sure you want to delete list: " + list.getName());
                     builder.setCancelable(false);
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
@@ -239,10 +246,7 @@ public class ListSelector extends AppCompatActivity implements View.OnClickListe
                 }
                 case R.id.update_list:
                 {
-                    // creates new builder
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-                    // inflates the view for adding list
+                                        // inflates the view for adding list
                     View viewInflated = LayoutInflater.from(this).inflate(R.layout.add_list_layout,
                             (ViewGroup) findViewById(android.R.id.content), false);
 
@@ -290,10 +294,10 @@ public class ListSelector extends AppCompatActivity implements View.OnClickListe
                     return super.onOptionsItemSelected(item);
                 }
             } // end switch
-        } // end if
+        }
         else
         {
             return true;
-        }
+        } // end if
     } // end onOptionsItemSelected
 } // end ListSelector

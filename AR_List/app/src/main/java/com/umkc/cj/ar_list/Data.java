@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Data extends SQLiteOpenHelper
 {
-    // database info
+   // database info
     private static final String DATABASE_NAME = "ARData";
     private static final int DATABASE_VERSION = 2;
 
@@ -34,8 +34,23 @@ public class Data extends SQLiteOpenHelper
     private static final String KEY_LIST_ITEM_QUANTITY = "QUANTITY";
     private static final String KEY_LIST_ITEM_FK = "LIST_ID";
 
+    // static variable for singleton
+    private static Data sInstance;
+
+    // gets the singleton instance
+    public static synchronized Data getInstance(Context context)
+    {
+        // get the database
+        if (sInstance == null)
+        {
+            sInstance = new Data(context.getApplicationContext());
+        } // end if
+
+        return sInstance;
+    } // end getInstance
+
     // Constructor
-    public Data(Context context)
+    private Data(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     } // end constructor
@@ -78,7 +93,7 @@ public class Data extends SQLiteOpenHelper
 
     // validates data and calls addList
     // throws: Exception
-    public void addListValid(String name) throws Exception
+    public void addListWithValidation(String name) throws Exception
     {
         if(name.length() == 0)
         {
@@ -89,11 +104,11 @@ public class Data extends SQLiteOpenHelper
         {
             addList(name);
         } // end if
-    } // end addListValid
+    } // end addListWithValidation
 
     // validates data and calls addListItem
     // throws: Exception
-    public void addItemValid(String name, int quantity, int foreignKey) throws Exception
+    public void addItemWithValidation(String name, int quantity, int foreignKey) throws Exception
     {
         if(name.length() == 0)
         {
@@ -104,23 +119,23 @@ public class Data extends SQLiteOpenHelper
         {
             addListItem(name, quantity, foreignKey);
         } // end if
-    } // end addItemValid
+    } // end addItemWithValidation
 
     // calls deleteList
-    public void deleteListValid(int listID)
+    public void deleteListWithValidation(int listID)
     {
         deleteList(listID);
-    } // end deleteListValid
+    } // end deleteListWithValidation
 
     // calls deleteItem
-    public void deleteItemValid(int itemID)
+    public void deleteItemWithValidation(int itemID)
     {
         deleteItem(itemID);
-    } // end deleteItemValid
+    } // end deleteItemWithValidation
 
     // validates data and calls updateItem
     // throws: Exception
-    public void updateItemValid(int itemID, String name, int quan) throws Exception
+    public void updateItemWithValidation(int itemID, String name, int quan) throws Exception
     {
         if(name.length() == 0)
         {
@@ -131,11 +146,11 @@ public class Data extends SQLiteOpenHelper
         {
             updateItem(itemID, name, quan);
         } // end if
-    } // end updateItemValid
+    } // end updateItemWithValidation
 
     // validates data and calls updateList
     // throws: Exception
-    public void updateListValid(int listID, String name) throws Exception
+    public void updateListWithValidation(int listID, String name) throws Exception
     {
         if(name.length() == 0)
         {
@@ -146,7 +161,7 @@ public class Data extends SQLiteOpenHelper
         {
             updateList(listID, name);
         } // end if
-    } // end updateListValid
+    } // end updateListWithValidation
 
     // Add an item to the list table
     // pass in the name of the list as a string
@@ -321,16 +336,11 @@ public class Data extends SQLiteOpenHelper
         // gets the database
         SQLiteDatabase db = getWritableDatabase();
 
-        // starts connection to the database
-        db.beginTransaction();
-
         // attempt to get data
         try
         {
             db.execSQL(LIST_ITEMS_DELETE_QUERY);
             db.execSQL(LISTS_DELETE_QUERY);
-
-            db.setTransactionSuccessful();
         }
         catch (Exception e)
         {
@@ -339,7 +349,7 @@ public class Data extends SQLiteOpenHelper
         finally
         {
             // close connection
-            db.endTransaction();
+            db.close();
         } // end try/catch
     } // end deleteList
 
@@ -354,6 +364,9 @@ public class Data extends SQLiteOpenHelper
         SQLiteDatabase db = getWritableDatabase();
 
         db.execSQL(LIST_ITEMS_DELETE_QUERY);
+
+        // close connection
+        db.close();
     } // end deleteItem
 
     // Update list associated with listID
@@ -373,15 +386,10 @@ public class Data extends SQLiteOpenHelper
         // gets the database
         SQLiteDatabase db = getWritableDatabase();
 
-        // starts connection to the database
-        db.beginTransaction();
-
         // attempt to get data
         try
         {
             db.execSQL(LISTS_UPDATE_QUERY);
-
-            db.setTransactionSuccessful();
         }
         catch (Exception e)
         {
@@ -390,7 +398,7 @@ public class Data extends SQLiteOpenHelper
         finally
         {
             // close connection
-            db.endTransaction();
+            db.close();
         } // end try/catch
     } // end updateList
 
@@ -413,15 +421,10 @@ public class Data extends SQLiteOpenHelper
         // gets the database
         SQLiteDatabase db = getWritableDatabase();
 
-        // starts connection to the database
-        db.beginTransaction();
-
         // attempt to get data
         try
         {
             db.execSQL(LIST_ITEMS_UPDATE_QUERY);
-
-            db.setTransactionSuccessful();
         }
         catch (Exception e)
         {
@@ -430,7 +433,7 @@ public class Data extends SQLiteOpenHelper
         finally
         {
             // close connection
-            db.endTransaction();
+            db.close();
         } // end try/catch
     } // end updateItem
 } // end Data

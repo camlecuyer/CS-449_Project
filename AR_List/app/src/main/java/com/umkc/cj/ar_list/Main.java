@@ -16,7 +16,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener
         setContentView(R.layout.activity_main);
 
         // initializes database
-        Data sql = new Data(this);
+        Data sql = Data.getInstance(this);
 
         // sets listener for standard view button
         View normalView = findViewById(R.id.normalView_button);

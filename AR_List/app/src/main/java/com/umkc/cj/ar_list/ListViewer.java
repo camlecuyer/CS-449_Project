@@ -44,7 +44,7 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
         setContentView(R.layout.activity_list_viewer);
 
         // get the database
-        sql = new Data(this);
+        sql = Data.getInstance(this);
 
         // get extras from caller activity
         Bundle extras = getIntent().getExtras();
@@ -105,45 +105,51 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
         curPosition = -1;
     } // end loadList
 
-    // calls database to add list
+    // displays error message
+    private void makeToast(String message)
+    {
+        Toast.makeText(this, message,Toast.LENGTH_LONG).show();
+    } // end makeToast
+
+    // calls database to add item
     private void addItem(String name, int num)
     {
         // add data to database
         try
         {
-            sql.addItemValid(name, num, listID);
+            sql.addItemWithValidation(name, num, listID);
         }
         catch (Exception e)
         {
-            Toast.makeText(this, "Add item failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+            makeToast("Add item failed: " + e.toString());
         } // end try/catch
     } // end addItem
 
-    // calls database to add list
+    // calls database to delete item
     private void deleteItem(int id)
     {
-        // add data to database
+        // delete data in database
         try
         {
-            sql.deleteItemValid(id);
+            sql.deleteItemWithValidation(id);
         }
         catch (Exception e)
         {
-            Toast.makeText(this, "Delete item failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+            makeToast("Delete item failed: " + e.toString());
         } // end try/catch
     } // end deleteItem
 
-    // calls database to add list
+    // calls database to update item
     private void updateItem(String name, int id, int num)
     {
-        // add data to database
+        // update data in database
         try
         {
-            sql.updateItemValid(id, name, num);
+            sql.updateItemWithValidation(id, name, num);
         }
         catch (Exception e)
         {
-            Toast.makeText(this, "Update item failed: " + e.toString(),Toast.LENGTH_SHORT).show();
+            makeToast("Update item failed: " + e.toString());
         } // end try/catch
     } // end updateItem
 
@@ -164,14 +170,14 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        // creates new builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
         // switches based on the id of the button clicked
         switch (item.getItemId())
         {
             case R.id.add:
             {
-                // creates new builder
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
                 // inflates the view for adding item
                 View viewInflated = LayoutInflater.from(this).inflate(R.layout.add_list_item_layout,
                         (ViewGroup) findViewById(android.R.id.content), false);
@@ -196,7 +202,7 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
                                 int num;
 
                                 // tests to see if good input
-                                if(inputQuantity.getText().toString().trim().length() == 0)
+                                if(inputQuantity.getText().toString().trim().isEmpty())
                                 {
                                     num = 0;
                                 }
@@ -232,8 +238,6 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
                 {
                     if(selectedItem != null)
                     {
-                        // creates new builder
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setMessage("Are you sure you want to delete item: " + selectedItem.getName());
                         builder.setCancelable(false);
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -263,9 +267,6 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
             {
                 if(listSize > 0 && curPosition != -1)
                 {
-                    // creates new builder
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
                     // inflates the view for adding item
                     View viewInflated = LayoutInflater.from(this).inflate(R.layout.add_list_item_layout,
                             (ViewGroup) findViewById(android.R.id.content), false);
@@ -293,7 +294,7 @@ public class ListViewer extends AppCompatActivity implements OnClickListener
                                     int itemId = selectedItem.getNumber();
 
                                     // tests to see if good input
-                                    if(inputQuantity.getText().toString().trim().length() == 0)
+                                    if(inputQuantity.getText().toString().trim().isEmpty())
                                     {
                                         num = 0;
                                     }

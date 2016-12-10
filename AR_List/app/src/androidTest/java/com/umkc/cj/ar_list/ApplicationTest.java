@@ -35,7 +35,7 @@ public class ApplicationTest
     @Test
     public void testAddList() throws Exception
     {
-        dt.addListValid("R");
+        dt.addListWithValidation("R");
         List<ListData> lists = dt.getLists();
 
         Assert.assertEquals(lists.size(), 1);
@@ -45,7 +45,7 @@ public class ApplicationTest
     @Test
     public void testAddItem() throws Exception
     {
-        dt.addItemValid("A", 3, 1);
+        dt.addItemWithValidation("A", 3, 1);
         ArrayList<ListItemData> item = dt.getListItems(1);
 
         Assert.assertEquals(item.size(), 1);
@@ -70,7 +70,7 @@ public class ApplicationTest
 
     public void testUpdateList() throws Exception
     {
-        dt.updateListValid(1, "D");
+        dt.updateListWithValidation(1, "D");
         List<ListData> lists = dt.getLists();
 
         Assert.assertEquals(lists.size(), 1);
@@ -79,7 +79,7 @@ public class ApplicationTest
 
     public void testUpdateItem() throws Exception
     {
-        dt.updateItemValid(1, "F", 5);
+        dt.updateItemWithValidation(1, "F", 5);
         ArrayList<ListItemData> item = dt.getListItems(1);
 
         Assert.assertEquals(item.size(), 1);
@@ -89,13 +89,13 @@ public class ApplicationTest
 
     public void testDeleteList() throws Exception
     {
-        dt.deleteListValid(1);
+        dt.deleteListWithValidation(1);
         Assert.assertEquals(dt.getLists().size(),0);
     }
 
     public void testDeleteItem() throws Exception
     {
-        dt.deleteItemValid(1);
+        dt.deleteItemWithValidation(1);
         Assert.assertEquals(dt.getListItems(1).size(),0);
     }
 }
